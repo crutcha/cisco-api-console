@@ -196,3 +196,107 @@ class CiscoHelloApi(BaseCiscoApiConsole):
 
             return result.json()
         raise CiscoApiCallFailed("Client not ready (credentials or token missing)")
+
+class CiscoSn2infoApi(BaseCiscoApiConsole):
+
+    '''
+    Implementation of Cisco Serial number to information API. This will get device coverage for managed devices.
+    '''
+    SN2INFO_API_URL = 'https://api.cisco.com/sn2info/v2/coverage/summary/serial_numbers/{0}'
+    SN2INFO_COVERAGE_END_URL = 'https://api.cisco.com/sn2info/v2/coverage/owner_status/serial_numbers/{0}'
+
+    def sn2info_api_call(self, serial_num):
+        logger.debug('call to sn2info API endpoint')
+
+        if self.is_ready_for_use():
+            try:
+                result = requests.get(self.SN2INFO_API_URL.format(serial_num), headers=self.http_auth_header, timeout=15)
+            except Exception as ex:
+                logger.error('cannot contact API endpoint at {}'.format(self.SN2INFO_API_URL))
+                raise ConnectionFailedException('cannot contact API endpoint at {}'.format(self.SN2INFO_API_URL))
+
+            return result.json()
+
+        raise CiscoApiCallFailed('Client not ready (credentails or token missing)')
+
+    def sn2info_api_coverage_end_api_call(self, serial_num):
+        logger.debug('call to sn2info API endpoint for coverage end info')
+
+        if self.is_ready_for_use():
+            try:
+                result = requests.get(self.SN2INFO_COVERAGE_END_URL.format(serial_num), headers=self.http_auth_header, timeout=15)
+            except Exception as ex:
+                logger.error('cannot contact API endpoint at {}'.format(self.SN2INFO_COVERAGE_END_URL))
+                raise ConnectionFailedException('cannot contact API endpoint at {}'.format(self.SN2INFO_COVERAGE_END_URL))
+
+            return result.json()
+
+        raise CiscoApiCallFailed('Client not ready (credentails or token missing)')
+
+
+class CiscoBugApi(BaseCiscoApiConsole):
+
+    '''
+    Implementation of Cisco Bugv2 API.
+     '''
+    BUG_API_URL = 'https://api.cisco.com/bug/v2.0/bugs/products/product_id/{0}/software_releases/{1}'
+
+    def bug_api_call(self, base_pid, sw_ver):
+        logger.debug('call to bug API endpoint')
+
+        if self.is_ready_for_use():
+            try:
+                result = requests.get(self.BUG_API_URL.format(base_pid, sw_ver), headers=self.http_auth_header, timeout=15)
+            except Exception as ex:
+                logger.error('cannot contact API endpoint at {}'.format(self.BUG_API_URL))
+                raise ConnectionFailedException('cannot contact API endpoint at {}'.format(self.BUG_API_URL))
+
+            return result.json()
+
+        raise CiscoApiCallFailed('Client not ready (credentails or token missing)')
+
+
+class CiscoSWSuggestionApi(BaseCiscoApiConsole):
+    '''
+    Using Cisco Software Suggestions API, use basepid to
+    get suggested software for given device.
+    '''
+
+    SW_SUGGEST_API_URL = 'https://api.cisco.com/software/suggestion/v1.0/suggestions/software/{0}'
+
+    def sw_suggestion_api_call(self, base_pid):
+        logger.debug('call to software suggestion API endpoint')
+
+        if self.is_ready_for_use():
+            try:
+                result = requests.get(self.SW_SUGGEST_API_URL.format(base_pid), headers=self.http_auth_header, timeout=15)
+            except Exception as ex:
+                logger.error('cannot contact API endpoint at {}'.format(self.SW_SUGGEST_API_URL))
+                raise ConnectionFailedException('cannot contact API endpoint at {}'.format(self.SW_SUGGEST_API_URL))
+
+            return result.json()
+
+        raise CiscoApiCallFailed('Client not ready (credentails or token missing)')
+
+class CiscoEoXApiBySerial(BaseCiscoApiConsole):
+    '''
+    Grab EoX record based on serial number.
+    '''
+
+    EOX_API_URL = 'https://api.cisco.com/supporttools/eox/rest/5/EOXBySerialNumber/1/{}?responseencoding=json'
+
+    def eox_api_call(self, serial_num):
+        logger.debug('call to EoX API endpoint')
+
+        if self.is_ready_for_use():
+            try:
+                result = requests.get(self.EOX_API_URL.format(serial_num), headers=self.http_auth_header, timeout=15)
+            except Exception as ex:
+                logger.error('cannot contact API endpoint at {}'.format(self.EOX_API_URL))
+                raise ConnectionFailedException('cannot contact API endpoint at {}'.format(self.EOX_API_URL))
+
+            return result.json()
+
+        raise CiscoApiCallFailed('Client not ready (credentials or token missing)')
+
+
